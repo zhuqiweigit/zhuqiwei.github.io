@@ -1,6 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>hexo notes</title>
+    <url>/2021/02/23/hexo%20notes/</url>
+    <content><![CDATA[<h1 id="hexo-notes"><a href="#hexo-notes" class="headerlink" title="hexo notes"></a>hexo notes</h1><ul>
+<li><p>新建文章</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo new <span class="string">&quot;hexo notes&quot;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>编译生成页面</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo generate</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>本地开启服务器并预览</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo server   <span class="comment">#一般会在http://localhost:4000</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>deploy（一键git提交、push到远端）</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo deploy</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Clean 清理缓存文件</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo clean</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>markdown中存在图片：</p>
+<p>将pic拷贝到 source/images目录下，并将md中的引用链接也设置为此</p>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>其它</category>
+      </categories>
+  </entry>
+  <entry>
     <title>lab1-mapReduce</title>
     <url>/2021/03/29/lab1-mapReduce/</url>
     <content><![CDATA[<p>最近开始学习MIT的分布式课程，首先做了lab1。</p>
@@ -58,34 +86,6 @@
 ]]></content>
       <categories>
         <category>分布式</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>hexo notes</title>
-    <url>/2021/02/23/hexo%20notes/</url>
-    <content><![CDATA[<h1 id="hexo-notes"><a href="#hexo-notes" class="headerlink" title="hexo notes"></a>hexo notes</h1><ul>
-<li><p>新建文章</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo new <span class="string">&quot;hexo notes&quot;</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>编译生成页面</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo generate</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>本地开启服务器并预览</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo server   <span class="comment">#一般会在http://localhost:4000</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>deploy（一键git提交、push到远端）</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo deploy</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>Clean 清理缓存文件</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo clean</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>markdown中存在图片：</p>
-<p>将pic拷贝到 source/images目录下，并将md中的引用链接也设置为此</p>
-</li>
-</ul>
-]]></content>
-      <categories>
-        <category>其它</category>
       </categories>
   </entry>
 </search>
