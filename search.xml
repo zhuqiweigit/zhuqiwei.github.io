@@ -55,7 +55,7 @@
 
 <p>Master主要需要实现两个RPC接口供Worker调用：</p>
 <ul>
-<li>AskForTask：请求任务，该接口会返回一个任务</li>
+<li>AskForTask：请求任务，该接口会根据任务分配和完成情况，返回一个task。具体来说，当所有map任务<strong>完成</strong>后，才可以继续分配reduce任务。如果所有map任务都已经分配出去，但并没有全部收到commit，说明部分map任务还在被执行，此时如果有worker请求任务，应该给它分配IDLE任务。</li>
 <li>CommitTask：提交任务，该接口会将一个已分配任务的状态改为已完成</li>
 </ul>
 <h3 id="2-worker"><a href="#2-worker" class="headerlink" title="2. worker"></a>2. worker</h3><p>worker作为客户端，不断调用Master提供的AskForTask请求任务，当获得一个任务后，就开始执行，执行完毕后调用CommitTask提交任务。然后循环继续请求新的任务。</p>
