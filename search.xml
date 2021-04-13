@@ -1,6 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>hexo notes</title>
+    <url>/2021/02/23/hexo%20notes/</url>
+    <content><![CDATA[<h1 id="hexo-notes"><a href="#hexo-notes" class="headerlink" title="hexo notes"></a>hexo notes</h1><span id="more"></span>
+
+<ul>
+<li><p>新建文章</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo new <span class="string">&quot;hexo notes&quot;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>编译生成页面</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo generate</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>本地开启服务器并预览</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo server   <span class="comment">#一般会在http://localhost:4000</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>deploy（一键git提交、push到远端）</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo deploy</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Clean 清理缓存文件</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo clean</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>markdown中存在图片：</p>
+<p>将pic拷贝到 source/images目录下，并将md中的引用链接也设置为此</p>
+</li>
+<li><p>主页文章缩略</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line">在文章内添加 &lt;!-- more --&gt;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>其它</category>
+      </categories>
+  </entry>
+  <entry>
     <title>lab1-mapReduce</title>
     <url>/2021/03/29/lab1-mapReduce/</url>
     <content><![CDATA[<p>最近开始学习MIT的分布式课程，首先做了lab1。</p>
@@ -63,48 +97,14 @@
       </categories>
   </entry>
   <entry>
-    <title>hexo notes</title>
-    <url>/2021/02/23/hexo%20notes/</url>
-    <content><![CDATA[<h1 id="hexo-notes"><a href="#hexo-notes" class="headerlink" title="hexo notes"></a>hexo notes</h1><ul>
-<li><p>新建文章</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo new <span class="string">&quot;hexo notes&quot;</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>编译生成页面</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo generate</span><br></pre></td></tr></table></figure>
-
-<span id="more"></span>
-</li>
-<li><p>本地开启服务器并预览</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo server   <span class="comment">#一般会在http://localhost:4000</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>deploy（一键git提交、push到远端）</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo deploy</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>Clean 清理缓存文件</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo clean</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>markdown中存在图片：</p>
-<p>将pic拷贝到 source/images目录下，并将md中的引用链接也设置为此</p>
-</li>
-<li><p>主页文章缩略</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line">在文章内添加 &lt;!-- more --&gt;</span><br></pre></td></tr></table></figure>
-
-</li>
-</ul>
-]]></content>
-      <categories>
-        <category>其它</category>
-      </categories>
-  </entry>
-  <entry>
     <title>lab2-raft</title>
     <url>/2021/04/13/lab2-raft/</url>
     <content><![CDATA[<p>最近完成了6.824的lab2，记录一下笔记。</p>
 <p>lab2的内容是实现raft协议。整个实验的内容分为3部分，lab2-A实现raft的选举机制，lab2-B实现raft的日志追加机制，lab2-C实现raft的持久化。</p>
-<p>完成实验的过程整体上可以分为两方面，其一是理解raft算法原理和细节，其二是设计和具体实现。</p>
-<p>以下内容也从这两方面分别介绍</p>
 <span id="more"></span>
 
+<p>完成实验的过程整体上可以分为两方面，其一是理解raft算法原理和细节，其二是设计和具体实现。</p>
+<p>以下内容也从这两方面分别介绍</p>
 <h2 id="raft-算法原理和细节"><a href="#raft-算法原理和细节" class="headerlink" title="raft 算法原理和细节"></a>raft 算法原理和细节</h2><p>为了对大规模数据进行处理，单机就成为了瓶颈，解决的办法就是使用更多的机器协同工作。而由于计算机本身的物理特性，其存在一定的崩溃概率，另外计算机网络也是计算机集群工作时出现故障的潜在原因（网络分隔、数据包丢失、数据包未按序到达）。如何使得由网络连接的计算机之间能协调一致工作，在某个机器故障or网络故障后，整个系统依然能正常运转，这就是一致性算法的目标。一致性算法用来组织机器执行指令，并使得其最终状态是一致的，在这个过程中能容许部分节点的故障or失败。</p>
 <p>raft是一种管理复制日志的一致性算法，它主要分为三个部分，选举、日志复制、安全性。raft算法会从整个集群中选举出一个leader，其它节点称为follower。每次客户端的command会先记录在leader的日志中，然后由leader负责同步给follower。当一条日志同步数目过半后，leader就可以commit这条日志，并把它应用到自己的状态机。说白了采用raft算法的系统中是采用投票机制来达成共识的，因此3个节点的系统中，只要2个节点一致了，整个系统就算做达成了共识。所以3个节点的系统可以容忍1个节点故障，5个节点的系统可以容忍2个节点的故障。</p>
 <p>下图是raft原论文中的，理解了这张图，外加一些选举安全性的说明，实现raft算法就基本没问题了。</p>
