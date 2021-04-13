@@ -20,28 +20,36 @@
     var CONFIG = {"hostname":"zhuqiwei.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta property="og:type" content="website">
-<meta property="og:title" content="ZhuQiwei&#39;s Blog">
-<meta property="og:url" content="https://zhuqiwei.github.io/index.html">
+  <meta name="description" content="最近完成了6.824的lab2，记录一下笔记。 lab2的内容是实现raft协议。整个实验的内容分为3部分，lab2-A实现raft的选举机制，lab2-B实现raft的日志追加机制，lab2-C实现raft的持久化。 完成实验的过程整体上可以分为两方面，其一是理解raft算法原理和细节，其二是设计和具体实现。 以下内容也从这两方面分别介绍 raft 算法原理和细节为了对大规模数据进行处理，单机就">
+<meta property="og:type" content="article">
+<meta property="og:title" content="lab2-raft">
+<meta property="og:url" content="https://zhuqiwei.github.io/2021/04/13/lab2-raft/index.html">
 <meta property="og:site_name" content="ZhuQiwei&#39;s Blog">
+<meta property="og:description" content="最近完成了6.824的lab2，记录一下笔记。 lab2的内容是实现raft协议。整个实验的内容分为3部分，lab2-A实现raft的选举机制，lab2-B实现raft的日志追加机制，lab2-C实现raft的持久化。 完成实验的过程整体上可以分为两方面，其一是理解raft算法原理和细节，其二是设计和具体实现。 以下内容也从这两方面分别介绍 raft 算法原理和细节为了对大规模数据进行处理，单机就">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://zhuqiwei.github.io/2021/04/13/images/image-20210413201537741.png">
+<meta property="og:image" content="https://zhuqiwei.github.io/2021/04/13/images/image-20210413214018447.png">
+<meta property="article:published_time" content="2021-04-13T11:55:32.000Z">
+<meta property="article:modified_time" content="2021-04-13T14:41:23.033Z">
 <meta property="article:author" content="ZhuQiwei">
+<meta property="article:tag" content="go">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://zhuqiwei.github.io/2021/04/13/images/image-20210413201537741.png">
 
-<link rel="canonical" href="https://zhuqiwei.github.io/">
+<link rel="canonical" href="https://zhuqiwei.github.io/2021/04/13/lab2-raft/">
 
 
 <script id="page-configurations">
   // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
-    isHome : true,
-    isPost : false,
+    isHome : false,
+    isPost : true,
     lang   : 'en'
   };
 </script>
 
-  <title>ZhuQiwei's Blog</title>
+  <title>lab2-raft | ZhuQiwei's Blog</title>
   
 
 
@@ -177,9 +185,10 @@
         <div class="content-wrap">
           
 
-          <div class="content index posts-expand">
+          <div class="content post posts-expand">
             
-      
+
+    
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
@@ -195,10 +204,9 @@
       <meta itemprop="name" content="ZhuQiwei's Blog">
     </span>
       <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/04/13/lab2-raft/" class="post-title-link" itemprop="url">lab2-raft</a>
-        </h2>
+        <h1 class="post-title" itemprop="name headline">
+          lab2-raft
+        </h1>
 
         <div class="post-meta">
             <span class="post-meta-item">
@@ -231,7 +239,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>最近完成了6.824的lab2，记录一下笔记。</p>
+        <p>最近完成了6.824的lab2，记录一下笔记。</p>
 <p>lab2的内容是实现raft协议。整个实验的内容分为3部分，lab2-A实现raft的选举机制，lab2-B实现raft的日志追加机制，lab2-C实现raft的持久化。</p>
 <p>完成实验的过程整体上可以分为两方面，其一是理解raft算法原理和细节，其二是设计和具体实现。</p>
 <p>以下内容也从这两方面分别介绍</p>
@@ -287,239 +295,33 @@
 </li>
 </ol>
 
-      
     </div>
 
     
     
     
+
       <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
+          <div class="post-tags">
+              <a href="/tags/go/" rel="tag"># go</a>
+          </div>
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://zhuqiwei.github.io/2021/03/29/lab1-mapReduce/">
+        
 
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="ZhuQiwei">
-      <meta itemprop="description" content="">
-    </span>
 
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="ZhuQiwei's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/03/29/lab1-mapReduce/" class="post-title-link" itemprop="url">lab1-mapReduce</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2021-03-29 21:14:32" itemprop="dateCreated datePublished" datetime="2021-03-29T21:14:32+08:00">2021-03-29</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-03-30 12:54:45" itemprop="dateModified" datetime="2021-03-30T12:54:45+08:00">2021-03-30</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">分布式</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>最近开始学习MIT的分布式课程，首先做了lab1。</p>
-<p>lab1的内容是mapReduce，关键有两部分，一是理解mapReduce的原理，二是实现分布式的mapReduce。</p>
-<p>以下内容也从这两部分着手</p>
-<h2 id="MapReduce-的原理"><a href="#MapReduce-的原理" class="headerlink" title="MapReduce 的原理"></a>MapReduce 的原理</h2><p>下图是一个word count 程序在mapReduce上的原理图。本图仅仅涉及worker节点，master节点未画出。master节点主要起 给worker节点分配工作的作用。</p>
-<p><img src="../images/mapreduce.jpg" alt="mapreduce"></p>
-<p>顾名思义，mapReduce就是将<strong>可分割</strong>的任务划分成两个阶段完成</p>
-<ul>
-<li>map阶段将原始数据(如文件内容)拆分成了一个个key-value pair的形式</li>
-<li>reduce阶段将这些拥有相同key的pair聚集在一起，进行某种用户自定义的汇总运算。</li>
-</ul>
-<p>mapReduce 的例子</p>
-<ul>
-<li>单词计数：map函数将content拆分成 {word, “1”}的形式；reduce将聚集在一起的相同的word的进行频率计数，输出{word, “1023”}的形式</li>
-<li>倒排索引：由单词找文档。map函数将{docName, content} 拆分为 {word, docName}的list；reduce将聚集在一起的相同的word，的对应的docName进行排序并汇总</li>
-</ul>
-<h2 id="分布式的MapReduce"><a href="#分布式的MapReduce" class="headerlink" title="分布式的MapReduce"></a>分布式的MapReduce</h2><h3 id="1-master"><a href="#1-master" class="headerlink" title="1. master"></a>1. master</h3><p>分布式的MapReduce采用C/S的模式，其中master作为服务端，worker节点作为客户端。即分布式MapReduce的运行模式为：worker节点通过RPC不断向master节点请求任务，master节点根据自己的数据结构记录的任务情况来给worker节点分配任务(通过RPC返回任务的meta description)。worker节点获取任务meta信息后，通过分布式文件系统获取文件，并完成任务的计算。</p>
-<p>Master的主要数据结构如下：</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Master <span class="keyword">struct</span> &#123;</span><br><span class="line">	<span class="comment">//待处理的n个文件</span></span><br><span class="line">	files []<span class="keyword">string</span></span><br><span class="line">	</span><br><span class="line">  <span class="comment">//map任务的meta描述，凭借这个来分配map任务</span></span><br><span class="line">	mapTasks   []Task</span><br><span class="line">	mapTaskPtr <span class="keyword">int</span></span><br><span class="line">  </span><br><span class="line">  <span class="comment">//reduce任务的meta描述，凭借这个来分配reduce任务</span></span><br><span class="line">	reduceTasks   []Task</span><br><span class="line">	reduceTaskPtr <span class="keyword">int</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">//当前已完成的task计数，用于判断每个阶段的任务是否完成</span></span><br><span class="line">	mapCompleteCnt <span class="keyword">int</span></span><br><span class="line">	reduceCompleteCnt <span class="keyword">int</span></span><br><span class="line">	<span class="comment">//mutex互斥保护变量：RPC是并发的，因此需要互斥访问Master的meta data</span></span><br><span class="line">	mutex sync.Mutex</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>描述任务的数据结构如下：</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Task <span class="keyword">struct</span> &#123;</span><br><span class="line">  <span class="comment">//任务类型，分为：Map任务，Reduce任务，IDLE空闲任务</span></span><br><span class="line">	taskType_ <span class="keyword">int</span></span><br><span class="line"></span><br><span class="line">	taskId_ <span class="keyword">int</span></span><br><span class="line">	<span class="comment">//任务状态：待分配、已分配、已完成</span></span><br><span class="line">	taskState_ <span class="keyword">int</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>Master主要需要实现两个RPC接口供Worker调用：</p>
-<ul>
-<li>AskForTask：请求任务，该接口会根据任务分配和完成情况，返回一个task。具体来说，当所有map任务<strong>完成</strong>后，才可以继续分配reduce任务。如果所有map任务都已经分配出去，但并没有全部收到commit，说明部分map任务还在被执行，此时如果有worker请求任务，应该给它分配IDLE任务。</li>
-<li>CommitTask：提交任务，该接口会将一个已分配任务的状态改为已完成</li>
-</ul>
-<h3 id="2-worker"><a href="#2-worker" class="headerlink" title="2. worker"></a>2. worker</h3><p>worker作为客户端，不断调用Master提供的AskForTask请求任务，当获得一个任务后，就开始执行，执行完毕后调用CommitTask提交任务。然后循环继续请求新的任务。</p>
-<p>worker每次请求任务都是通过RPC，当RPC向Master节点发起连接时，如果连接失败，说明master损坏，or整个mapReduce任务已经完成且master已退出。此时worker也退出即可。</p>
-<p>worker执行任务的流程则如文章一开始画的图一样。</p>
-<h3 id="3-错误处理"><a href="#3-错误处理" class="headerlink" title="3. 错误处理"></a>3. 错误处理</h3><p>master故障：只需要将master节点的meta-data信息周期性写入磁盘，当master故障时，重启一个新节点并load这个meta-data即可继续执行master的功能。当然一般来说master是不允许有故障的，如果出现了故障，直接停止整个程序的运行，让用户检查故障也是一种方法</p>
-<p>worker故障：如果worker发生了故障，则worker的任务需要由其它worker重新完成</p>
-<ul>
-<li>master端：master分配一个任务给worker后，会启动一个协程来监控任务的完成情况。具体来说，可以设置一个定时器，当10s后检查该任务是否已经由worker提交，且任务的状态改为“已完成“。如果否，则说明worker可能存在故障，只需要将该任务从 “已分配”的状态改为“待分配”，即可。</li>
-<li>worker端：worker的任务提交必须是原子性的，即worker在运行中生成的文件是私有的，可以将其命名为temp文件。只有当任务完成后，才将temp文件改成标准命名的文件，使得其它worker节点可见，然后再向master节点commit任务。这样做的原因是，如果worker在执行任务的过程中直接使用标准命名的文件，当work节点挂掉后，其它work节点会重做该task，但此时出现了file name的冲突。</li>
-</ul>
-<h3 id="4-go编程的一些note"><a href="#4-go编程的一些note" class="headerlink" title="4. go编程的一些note"></a>4. go编程的一些note</h3><p>刚开始尝试go编程，记录一些go的语法</p>
-<ul>
-<li><p>RPC</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//1.RPC传递的struct的成员必须大写</span></span><br><span class="line"><span class="keyword">type</span> TaskRequest <span class="keyword">struct</span> &#123;</span><br><span class="line">	Pad <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//2.RPC的接口函数格式; 请求消息和返回消息通过函数参数传递，因此需要使用引用传递；返回值必须是error类型，若没有错误则返回nil</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(m *Master)</span> <span class="title">CommitTask</span><span class="params">(request *CommitRequest, response *CommitResponse)</span> <span class="title">error</span></span>&#123;</span><br><span class="line">  	<span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>fmt 相关</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//1. %v可打印各种变量</span></span><br><span class="line">fmt.Printf(<span class="string">&quot;open file [%v] failed  %v&quot;</span>, fileName, err)</span><br><span class="line"></span><br><span class="line"><span class="comment">//2. Sprintf 格式化输出字符串</span></span><br><span class="line">str := fmt.Sprintf(<span class="string">&quot;tmp-mr-%v-%v&quot;</span>, mapTaskId, i)</span><br><span class="line"></span><br><span class="line"><span class="comment">//3. Sscanf 从字符串格式化读入数据; n表示读到了几个数据</span></span><br><span class="line">n, err := fmt.Sscanf(str, <span class="string">&quot;mr-%v-%v&quot;</span>, &amp;map_id, &amp;reduce_id)</span><br><span class="line"></span><br><span class="line"><span class="comment">//4. Fprintf 向文件中格式化输出数据</span></span><br><span class="line">fmt.Fprintf(filePtr, <span class="string">&quot;%v %v\n&quot;</span>, key, val)</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>json</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//1. 直接把struct数据写入到文件中，以json格式</span></span><br><span class="line">encoder := json.NewEncoder(filePtr)</span><br><span class="line">err := encoder.Encode(kvaStruct)</span><br><span class="line"></span><br><span class="line"><span class="comment">//2. 从文件中把json解码，并读入为struct</span></span><br><span class="line">decoder := json.NewDecoder(f)</span><br><span class="line"><span class="keyword">for</span> &#123;</span><br><span class="line">		kv := KeyValue&#123;&#125;</span><br><span class="line">		<span class="keyword">if</span> err := decoder.Decode(&amp;kv); err != <span class="literal">nil</span> &#123;</span><br><span class="line">			<span class="keyword">break</span></span><br><span class="line">		&#125;</span><br><span class="line">		kva = <span class="built_in">append</span>(kva, kv)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>读写文件相关</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//1.利用ioutil读文件，得到的buf类型为[]byte；readAll读入该文件所有的内容</span></span><br><span class="line">buf, err := ioutil.ReadAll(file)</span><br><span class="line"></span><br><span class="line"><span class="comment">//2.利用ioutil读取目录，得到的是每个文件的描述struct(不是文件指针，也不是fileName)</span></span><br><span class="line">allFilesDescription, err := ioutil.ReadDir(<span class="string">&quot;./&quot;</span>)</span><br><span class="line"><span class="keyword">for</span> _, fileDes := <span class="keyword">range</span> allFilesDescription &#123;</span><br><span class="line">  fileName := fileDes.Name()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//3. 利用filePtr.Read只能读取缓冲区大小的数据</span></span><br><span class="line">buf := <span class="built_in">make</span>([]<span class="keyword">byte</span>, <span class="number">1024</span>)</span><br><span class="line">n, err := filePtr.Read(buf)  <span class="comment">//读到的只是1024 bytes大小的数据，不会读完全文</span></span><br></pre></td></tr></table></figure>
-
-</li>
-</ul>
-
-      
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/03/29/lab1-mapReduce/" rel="prev" title="lab1-mapReduce">
+      <i class="fa fa-chevron-left"></i> lab1-mapReduce
+    </a></div>
+      <div class="post-nav-item"></div>
     </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
       </footer>
+    
   </article>
   
   
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://zhuqiwei.github.io/2021/02/23/hexo%20notes/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="ZhuQiwei">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="ZhuQiwei's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/02/23/hexo%20notes/" class="post-title-link" itemprop="url">hexo notes</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2021-02-23 23:06:26" itemprop="dateCreated datePublished" datetime="2021-02-23T23:06:26+08:00">2021-02-23</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-03-30 00:14:44" itemprop="dateModified" datetime="2021-03-30T00:14:44+08:00">2021-03-30</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%85%B6%E5%AE%83/" itemprop="url" rel="index"><span itemprop="name">其它</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="hexo-notes"><a href="#hexo-notes" class="headerlink" title="hexo notes"></a>hexo notes</h1><ul>
-<li><p>新建文章</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo new <span class="string">&quot;hexo notes&quot;</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>编译生成页面</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo generate</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>本地开启服务器并预览</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo server   <span class="comment">#一般会在http://localhost:4000</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>deploy（一键git提交、push到远端）</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo deploy</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>Clean 清理缓存文件</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo clean</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>markdown中存在图片：</p>
-<p>将pic拷贝到 source/images目录下，并将md中的引用链接也设置为此</p>
-</li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-
   
 
 
@@ -572,6 +374,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#raft-%E7%AE%97%E6%B3%95%E5%8E%9F%E7%90%86%E5%92%8C%E7%BB%86%E8%8A%82"><span class="nav-number">1.</span> <span class="nav-text">raft 算法原理和细节</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%89%E4%B8%BE"><span class="nav-number">1.1.</span> <span class="nav-text">选举</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%8D%E5%88%B6%E6%97%A5%E5%BF%97"><span class="nav-number">1.2.</span> <span class="nav-text">复制日志</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E5%85%A8%E6%80%A7"><span class="nav-number">1.3.</span> <span class="nav-text">安全性</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#lab2%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.</span> <span class="nav-text">lab2实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.1.</span> <span class="nav-text">代码实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E4%BA%9Bbug"><span class="nav-number">2.2.</span> <span class="nav-text">一些bug</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
