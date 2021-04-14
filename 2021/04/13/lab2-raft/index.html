@@ -27,14 +27,14 @@
 <meta property="og:site_name" content="ZhuQiwei&#39;s Blog">
 <meta property="og:description" content="最近完成了6.824的lab2，记录一下笔记。 lab2的内容是实现raft协议。整个实验的内容分为3部分，lab2-A实现raft的选举机制，lab2-B实现raft的日志追加机制，lab2-C实现raft的持久化。">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://zhuqiwei.github.io/2021/04/13/images/image-20210413201537741.png">
-<meta property="og:image" content="https://zhuqiwei.github.io/2021/04/13/images/image-20210413214018447.png">
+<meta property="og:image" content="https://zhuqiwei.github.io/2021/04/13/images/raft0.png">
+<meta property="og:image" content="https://zhuqiwei.github.io/2021/04/13/images/raft1.png">
 <meta property="article:published_time" content="2021-04-13T11:55:32.000Z">
-<meta property="article:modified_time" content="2021-04-13T15:07:21.654Z">
+<meta property="article:modified_time" content="2021-04-14T07:43:13.239Z">
 <meta property="article:author" content="ZhuQiwei">
 <meta property="article:tag" content="go">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://zhuqiwei.github.io/2021/04/13/images/image-20210413201537741.png">
+<meta name="twitter:image" content="https://zhuqiwei.github.io/2021/04/13/images/raft0.png">
 
 <link rel="canonical" href="https://zhuqiwei.github.io/2021/04/13/lab2-raft/">
 
@@ -214,10 +214,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2021-04-13 19:55:32 / Modified: 23:07:21" itemprop="dateCreated datePublished" datetime="2021-04-13T19:55:32+08:00">2021-04-13</time>
+              <time title="Created: 2021-04-13 19:55:32" itemprop="dateCreated datePublished" datetime="2021-04-13T19:55:32+08:00">2021-04-13</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-04-14 15:43:13" itemprop="dateModified" datetime="2021-04-14T15:43:13+08:00">2021-04-14</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -248,7 +254,8 @@
 <h2 id="raft-算法原理和细节"><a href="#raft-算法原理和细节" class="headerlink" title="raft 算法原理和细节"></a>raft 算法原理和细节</h2><p>为了对大规模数据进行处理，单机就成为了瓶颈，解决的办法就是使用更多的机器协同工作。而由于计算机本身的物理特性，其存在一定的崩溃概率，另外计算机网络也是计算机集群工作时出现故障的潜在原因（网络分隔、数据包丢失、数据包未按序到达）。如何使得由网络连接的计算机之间能协调一致工作，在某个机器故障or网络故障后，整个系统依然能正常运转，这就是一致性算法的目标。一致性算法用来组织机器执行指令，并使得其最终状态是一致的，在这个过程中能容许部分节点的故障or失败。</p>
 <p>raft是一种管理复制日志的一致性算法，它主要分为三个部分，选举、日志复制、安全性。raft算法会从整个集群中选举出一个leader，其它节点称为follower。每次客户端的command会先记录在leader的日志中，然后由leader负责同步给follower。当一条日志同步数目过半后，leader就可以commit这条日志，并把它应用到自己的状态机。说白了采用raft算法的系统中是采用投票机制来达成共识的，因此3个节点的系统中，只要2个节点一致了，整个系统就算做达成了共识。所以3个节点的系统可以容忍1个节点故障，5个节点的系统可以容忍2个节点的故障。</p>
 <p>下图是raft原论文中的，理解了这张图，外加一些选举安全性的说明，实现raft算法就基本没问题了。</p>
-<p><img src="../images/image-20210413201537741.png" alt="image-20210413201537741"></p>
+<img src="../images/raft0.png" alt="raft0" style="zoom:80%;" />
+
 <h3 id="选举"><a href="#选举" class="headerlink" title="选举"></a>选举</h3><p>raft使用心跳机制来实现leader的感知。即leader周期性的广播心跳信息给follower，follower由此得知leader的存在。如果follower在一段时间内没有收到心跳数据(可能是leader和它之间的网络中断了，也可能是leader故障了)，则它会认为leader已经死了，因此自己会变成candidate，并发起投票。如果它可以得到半数的票，就可以当选为新的leader。</p>
 <p>follower变成canditate之后立即发起投票，这包含如下几个动作：term加一，自己投自己，重置自己的选举计时器，然后群发自己的请求投票RPC。</p>
 <p>接收者收到candidate的投票请求后，先检查term。term相当于一个逻辑时钟，标志着现在发起投票的人处于哪一时代。如果term比自己的老，则可以直接拒绝。否则，结合日志的term、index(candidate的日志必须和自己的一样新or比自己的还新)，voteFor(未投过票就投给它，投过它就直接返回给它true，已经投给别人了就返回false)来判断是否投票给它。</p>
@@ -268,7 +275,8 @@
 <p>因此为了方便比较，candidate会在请求投票的RPC中携带最后一条日志的term和index，方便follower比较。</p>
 </li>
 <li><p>Leader不允许提交之前Term的日志条目，只能提交当前term的日志条目。</p>
-<p><img src="../images/image-20210413214018447.png" alt="image-20210413214018447"></p>
+<img src="../images/raft1.png" alt="raft1" style="zoom:70%;" />
+
 <p>如上图所示，s1在term1时当选为leader，复制了2条消息，然后故障崩溃。s5在term2时当选为leader(凭借s3 s4和自己的票)，然后复制了1条消息，后故障崩溃。然后s1在term3时当选为leader，把黄色的消息给s3复制了一份，此时黄色消息已经在集群中复制过半了。<strong>如果允许s1作为leader提交这条黄色的消息</strong>，则存在可能，s1将消息应用到了自己的状态机，而s2和s3还没来得及commit or 应用黄色消息，就被图(d)中新当选的leader s5覆盖成了蓝色消息，随后提交蓝色消息并apply。此时，系统中出现了两种状态，在index=2的位置，s1为黄色消息，s2位蓝色消息。</p>
 <p>为了应对这种不一致现象，<strong>规定，图(c)时刻，s1作为leader只能通过提交自己term的红色消息的方式间接提交旧term的消息，即s1观察到红色消息复制到了大多数，然后推进commitIndex为红色消息的index，从而间接把之前term的黄色消息也提交了。而不能直接通过观察到黄色消息已经过半，而推进commitIndex为黄色消息的index，因为这有可能会导致不一致状态</strong></p>
 </li>
