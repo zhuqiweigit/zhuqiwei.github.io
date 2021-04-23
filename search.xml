@@ -176,6 +176,8 @@
 <span id="more"></span>
 
 <h2 id="Key-value-service-without-log-compaction"><a href="#Key-value-service-without-log-compaction" class="headerlink" title="Key/value service without log compaction"></a>Key/value service without log compaction</h2><p>Key Value Service 由客户端和服务端组成，其中客户端处于用户的机器上，服务端和它底层的raft处于服务器上，并且每个服务端与对应的raft处于同一个机器，即raft作为底层，负责一致性，而服务端处于上层，负责接受从客户端发来的请求并结合raft的反馈对状态机做相应的修改。</p>
+<p>通常，集群由n个服务端组成，只有一个服务端对应的底层raft为leader，也即只有这个服务端是leader。客户端的交互对象就是这个leader服务端。客户端发过来一个command给leader服务端，然后leader服务端把这条command拿去给集群内的follower达成共识，然后commit，一旦commit后，leader就可以把这个command执行（应用）到自己的状态机。</p>
+<p>在客户端看来，就好像服务端并没有分布式集群，它仅仅是在和leader进行交互。</p>
 <p>具体到本次lab，服务端负责维护的是一个kv数据库，在lab中我们将其简化为一个map[string] string。服务端需要处理三种请求：</p>
 <ul>
 <li>GET(key)：负责接受一个key，并查询其对应的value，如果没有找到，就返回空字符串。</li>
